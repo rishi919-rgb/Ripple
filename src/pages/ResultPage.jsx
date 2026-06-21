@@ -25,6 +25,8 @@ import {
   Tooltip,
 } from "recharts";
 import foods from "../data/foods.json";
+import AquaQuip from "../components/AquaQuip";
+import EarthImpact from "../components/EarthImpact";
 
 const COLORS = [
   "#22c55e",
@@ -44,13 +46,12 @@ export default function ResultPage() {
   const [selectedAlternative, setSelectedAlternative] = useState(null);
   const [swapMessage, setSwapMessage] = useState(null);
 
+  // Guard: if no food in context, go home
   useEffect(() => {
-    if (!foodData) {
-      navigate("/");
-    }
+    if (!foodData) navigate("/");
   }, [foodData, navigate]);
 
-  // Reset simulator whenever foodData changes (i.e. back + scan again)
+  // Reset simulator on food change (back + new scan)
   useEffect(() => {
     setSelectedAlternative(null);
     setSwapMessage(null);
@@ -58,20 +59,20 @@ export default function ResultPage() {
 
   if (!foodData) return null;
 
-  // --- Donut chart data ---
+  // ── Donut chart data ──────────────────────────────────────────────────────
   const ingredientData = foodData.ingredients.map((ing) => ({
     name: ing.name,
     value: ing.percentage,
   }));
 
-  // --- Sustainability colour ---
+  // ── Sustainability score colour ───────────────────────────────────────────
   let scoreBg = "bg-green-50 border-green-200 text-green-700";
   if (foodData.sustainabilityScore < 50)
     scoreBg = "bg-red-50 border-red-200 text-red-700";
   else if (foodData.sustainabilityScore < 80)
     scoreBg = "bg-yellow-50 border-yellow-200 text-yellow-700";
 
-  // --- What-If data ---
+  // ── What-If data ──────────────────────────────────────────────────────────
   const alternativesData = (foodData.alternatives || [])
     .map((id) => foods.find((f) => f.id === id))
     .filter(Boolean);
@@ -91,8 +92,8 @@ export default function ResultPage() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 space-y-5 pb-10">
-      {/* ── Back ── */}
+    <div className="max-w-lg mx-auto p-4 space-y-5 pb-12">
+      {/* ── Back ─────────────────────────────────────────────────────────── */}
       <Button
         variant="ghost"
         onClick={() => navigate("/")}
@@ -101,7 +102,7 @@ export default function ResultPage() {
         ← Back to Foods
       </Button>
 
-      {/* ── Water Bank & Streak badges ── */}
+      {/* ── Water Bank & Streak badges ───────────────────────────────────── */}
       <div className="flex gap-3">
         <div className="flex-1 rounded-xl border bg-blue-50 border-blue-200 p-3 text-center">
           <p className="text-[10px] uppercase font-bold tracking-wider text-blue-400">
@@ -121,7 +122,7 @@ export default function ResultPage() {
         </div>
       </div>
 
-      {/* ── Food name & confidence ── */}
+      {/* ── Food name & confidence ───────────────────────────────────────── */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="text-2xl font-extrabold">
@@ -133,7 +134,7 @@ export default function ResultPage() {
         </CardHeader>
       </Card>
 
-      {/* ── Donut chart ── */}
+      {/* ── Donut chart ──────────────────────────────────────────────────── */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-bold text-gray-700">
@@ -170,7 +171,7 @@ export default function ResultPage() {
         </CardContent>
       </Card>
 
-      {/* ── 3 Stat cards ── */}
+      {/* ── 3 Stat cards ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-3">
         <Card className="border shadow-sm p-3 text-center flex flex-col items-center justify-center gap-1">
           <p className="text-[10px] uppercase font-bold tracking-wider text-gray-400">
@@ -205,7 +206,10 @@ export default function ResultPage() {
         </Card>
       </div>
 
-      {/* ── What-If Simulator ── */}
+      {/* ── Aqua AI Quip ─────────────────────────────────────────────────── */}
+      <AquaQuip quipTier={foodData.quipTier} />
+
+      {/* ── What-If Simulator ────────────────────────────────────────────── */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-bold text-gray-700">
@@ -261,7 +265,9 @@ export default function ResultPage() {
                     </span>
                   </div>
                   <div className="border-t pt-2 flex justify-between items-center">
-                    <span className="font-bold text-gray-700">You would save</span>
+                    <span className="font-bold text-gray-700">
+                      You would save
+                    </span>
                     <span
                       className={`text-lg font-extrabold ${
                         saved > 0 ? "text-green-600" : "text-red-600"
@@ -272,7 +278,8 @@ export default function ResultPage() {
                   </div>
                   {saved <= 0 && (
                     <p className="text-xs text-red-600 bg-red-50 rounded p-2 border border-red-200">
-                      This swap would cost more water — keep your current choice!
+                      This swap would cost more water — keep your current
+                      choice!
                     </p>
                   )}
                 </div>
@@ -297,6 +304,9 @@ export default function ResultPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* ── Earth Impact Simulator (appears when alternative selected) ────── */}
+      {selectedAlternative && <EarthImpact savedLitres={saved} />}
     </div>
   );
 }
