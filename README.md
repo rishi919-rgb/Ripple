@@ -1,8 +1,23 @@
-# AquaLens AI
+# Ripple — AquaLens AI
 ### *See The Hidden Water Behind Every Bite*
 
 > **Every bite has a story. Now you can see it.**
 > Built for a 150-team hackathon. Built to be remembered.
+
+> **🛜 Offline-first:** Ripple runs entirely offline. No live API calls exist on the critical demo path. The detection engine, water footprint calculations, What-If Simulator, Water Bank, Streak, and Earth Impact Simulator all compute from the local `foods.json` dataset — no server, no CDN, no internet required. Internet is only needed for the **optional AI photo matching stretch feature** (Gemini Vision API), which is explicitly not on the critical demo path.
+
+## Quick Start
+
+```bash
+git clone https://github.com/rishi919-rgb/Ripple.git
+cd Ripple
+npm install
+npm run dev          # → http://localhost:5173
+# or for production preview:
+npm run build && npm run preview
+```
+
+
 
 ---
 
