@@ -1,0 +1,19 @@
+[
+  {
+    "id": "pizza",
+    "name": "Cheese Pizza (slice)",
+    "image": "pizza.jpg",
+    "confidence": 0.91,
+    "ingredients": [
+      {"name": "Cheese", "percentage": 35, "waterPerKg": 5000},
+      {"name": "Wheat Flour", "percentage": 30, "waterPerKg": 100},
+      {"name": "Tomato Sauce", "percentage": 20, "waterPerKg": 180},
+      {"name": "Toppings/Oil", "percentage": 15, "waterPerKg": 250}
+    ],
+    "totalWaterL": 1260,
+    "equivalent": {"glasses": 6300, "showers": 21, "drinkingDays": 52},
+    "sustainabilityScore": 42,
+    "quipTier": "high-mid",
+    "alternatives": ["dhokla", "idli", "dosa"]
+  }
+]
