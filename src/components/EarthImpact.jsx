@@ -1,20 +1,16 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCountUp } from "../hooks/useCountUp";
 
 const OLYMPIC_POOL_LITRES = 2_500_000;
 
-/**
- * Earth Impact Simulator — scales water savings to 1 million people.
- * Only shown when `savedLitres` is available (selectedAlternative chosen).
- */
 export default function EarthImpact({ savedLitres }) {
   const totalSaved = savedLitres > 0 ? savedLitres * 1_000_000 : 0;
-  const pools = savedLitres > 0 ? totalSaved / OLYMPIC_POOL_LITRES : 0;
+  const pools      = savedLitres > 0 ? totalSaved / OLYMPIC_POOL_LITRES : 0;
 
-  // Animated counters — restart whenever the alternative changes
   const animatedLitres = useCountUp(totalSaved, 1400);
-  const animatedPools = useCountUp(Math.round(pools), 1200);
+  const animatedPools  = useCountUp(Math.round(pools), 1200);
 
   if (savedLitres <= 0) {
     return (
@@ -33,14 +29,13 @@ export default function EarthImpact({ savedLitres }) {
     );
   }
 
-  // Format large numbers
-  const formattedLitres = animatedLitres.toLocaleString("en-IN");
-  const inBillions = (animatedLitres / 1_000_000_000).toFixed(2);
-  const showBillions = totalSaved >= 1_000_000_000;
+  const showBillions     = totalSaved >= 1_000_000_000;
+  const inBillions       = (animatedLitres / 1_000_000_000).toFixed(2);
+  const formattedLitres  = animatedLitres.toLocaleString("en-IN");
 
   return (
     <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-teal-500 text-white overflow-hidden relative">
-      {/* decorative ring */}
+      {/* Decorative rings */}
       <div className="absolute -top-8 -right-8 w-36 h-36 rounded-full bg-white/10" />
       <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
 
@@ -54,16 +49,22 @@ export default function EarthImpact({ savedLitres }) {
       </CardHeader>
 
       <CardContent className="space-y-4 relative z-10">
-        {/* Litres saved */}
+        {/* Litres */}
         <div className="bg-white/15 rounded-xl p-4 text-center backdrop-blur-sm">
           <p className="text-[10px] uppercase font-bold tracking-widest text-blue-100 mb-1">
             Total Water Saved
           </p>
           {showBillions ? (
-            <p className="text-4xl font-black leading-none">
+            <motion.p
+              key={`billions-${totalSaved}`}
+              className="text-4xl font-black leading-none"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            >
               {inBillions}
               <span className="text-xl font-bold ml-1">billion litres</span>
-            </p>
+            </motion.p>
           ) : (
             <p className="text-4xl font-black leading-none">
               {formattedLitres}
@@ -72,7 +73,7 @@ export default function EarthImpact({ savedLitres }) {
           )}
         </div>
 
-        {/* Olympic pools */}
+        {/* Pools */}
         <div className="bg-white/15 rounded-xl p-4 text-center backdrop-blur-sm">
           <p className="text-[10px] uppercase font-bold tracking-widest text-blue-100 mb-1">
             Equivalent Olympic Swimming Pools
