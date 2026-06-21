@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useFood } from "../context/FoodContext";
 import foods from "../data/foods.json";
 
@@ -7,8 +7,19 @@ export default function DetectionPage() {
   const [progress, setProgress] = useState(0);
   const { setFoodData } = useFood();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const foodId = searchParams.get("foodId");
+
+  // Find the selected food matching the id
+  const selectedFood = foods.find((f) => f.id === foodId);
 
   useEffect(() => {
+    // If no valid food found, redirect to home
+    if (!foodId || !selectedFood) {
+      navigate("/");
+      return;
+    }
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -20,16 +31,18 @@ export default function DetectionPage() {
     }, 20); // 100 increments of 20ms = 2 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [foodId, selectedFood, navigate]);
 
   useEffect(() => {
-    if (progress === 100) {
-      // Fetch the hardcoded pizza data (first element)
-      const pizza = foods[0];
-      setFoodData(pizza);
+    if (progress === 100 && selectedFood) {
+      setFoodData(selectedFood);
       navigate("/result");
     }
-  }, [progress, navigate, setFoodData]);
+  }, [progress, selectedFood, navigate, setFoodData]);
+
+  if (!selectedFood) {
+    return null;
+  }
 
   // SVG ring calculations
   const radius = 60;
@@ -45,7 +58,7 @@ export default function DetectionPage() {
         <svg height={radius * 2} width={radius * 2} className="transform -rotate-90">
           {/* Background circle */}
           <circle
-            stroke="#e5e7eb" // light gray
+            stroke="#e5e7eb"
             fill="transparent"
             strokeWidth={stroke}
             r={normalizedRadius}
@@ -54,7 +67,7 @@ export default function DetectionPage() {
           />
           {/* Foreground progress circle */}
           <circle
-            stroke="#000000" // black
+            stroke="#000000"
             fill="transparent"
             strokeWidth={stroke}
             strokeDasharray={circumference + " " + circumference}
@@ -70,7 +83,7 @@ export default function DetectionPage() {
         <span className="absolute text-lg font-bold">{progress}%</span>
       </div>
       <p className="mt-6 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-        Scanning...
+        Scanning {selectedFood.name}...
       </p>
     </div>
   );

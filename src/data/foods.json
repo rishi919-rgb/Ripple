@@ -1,5 +1,22 @@
 [
   {
+    "id": "samosa",
+    "name": "Samosa",
+    "image": "samosa.jpg",
+    "confidence": 0.94,
+    "ingredients": [
+      {"name": "Potato", "percentage": 60, "waterPerKg": 110},
+      {"name": "Wheat Flour", "percentage": 25, "waterPerKg": 100},
+      {"name": "Oil", "percentage": 10, "waterPerKg": 200},
+      {"name": "Spices", "percentage": 5, "waterPerKg": 50}
+    ],
+    "totalWaterL": 170,
+    "equivalent": {"glasses": 850, "showers": 3, "drinkingDays": 7},
+    "sustainabilityScore": 68,
+    "quipTier": "medium",
+    "alternatives": ["dhokla", "idli", "dosa"]
+  },
+  {
     "id": "pizza",
     "name": "Cheese Pizza (slice)",
     "image": "pizza.jpg",
@@ -15,5 +32,86 @@
     "sustainabilityScore": 42,
     "quipTier": "high-mid",
     "alternatives": ["dhokla", "idli", "dosa"]
+  },
+  {
+    "id": "burger",
+    "name": "Beef-style Burger",
+    "image": "burger.jpg",
+    "confidence": 0.93,
+    "ingredients": [
+      {"name": "Patty", "percentage": 45, "waterPerKg": 15000},
+      {"name": "Bun", "percentage": 20, "waterPerKg": 100},
+      {"name": "Cheese", "percentage": 15, "waterPerKg": 5000},
+      {"name": "Veggies/Sauce", "percentage": 20, "waterPerKg": 150}
+    ],
+    "totalWaterL": 2400,
+    "equivalent": {"glasses": 12000, "showers": 40, "drinkingDays": 100},
+    "sustainabilityScore": 21,
+    "quipTier": "high",
+    "alternatives": ["dhokla", "idli", "dosa"]
+  },
+  {
+    "id": "dosa",
+    "name": "Plain Dosa",
+    "image": "dosa.jpg",
+    "confidence": 0.95,
+    "ingredients": [
+      {"name": "Rice", "percentage": 60, "waterPerKg": 2500},
+      {"name": "Urad Dal", "percentage": 30, "waterPerKg": 4000},
+      {"name": "Oil", "percentage": 10, "waterPerKg": 200}
+    ],
+    "totalWaterL": 210,
+    "equivalent": {"glasses": 1050, "showers": 4, "drinkingDays": 9},
+    "sustainabilityScore": 64,
+    "quipTier": "medium",
+    "alternatives": ["dhokla", "idli"]
+  },
+  {
+    "id": "biryani",
+    "name": "Chicken Biryani",
+    "image": "biryani.jpg",
+    "confidence": 0.90,
+    "ingredients": [
+      {"name": "Chicken", "percentage": 40, "waterPerKg": 4300},
+      {"name": "Rice", "percentage": 45, "waterPerKg": 2500},
+      {"name": "Oil/Ghee", "percentage": 10, "waterPerKg": 200},
+      {"name": "Spices", "percentage": 5, "waterPerKg": 50}
+    ],
+    "totalWaterL": 980,
+    "equivalent": {"glasses": 4900, "showers": 16, "drinkingDays": 40},
+    "sustainabilityScore": 37,
+    "quipTier": "high-mid",
+    "alternatives": ["dhokla", "idli", "dosa"]
+  },
+  {
+    "id": "dhokla",
+    "name": "Dhokla",
+    "image": "dhokla.jpg",
+    "confidence": 0.96,
+    "ingredients": [
+      {"name": "Gram Flour", "percentage": 70, "waterPerKg": 130},
+      {"name": "Oil", "percentage": 10, "waterPerKg": 200},
+      {"name": "Spices/Curd", "percentage": 20, "waterPerKg": 90}
+    ],
+    "totalWaterL": 90,
+    "equivalent": {"glasses": 450, "showers": 2, "drinkingDays": 4},
+    "sustainabilityScore": 88,
+    "quipTier": "low",
+    "alternatives": []
+  },
+  {
+    "id": "idli",
+    "name": "Idli (2 pieces)",
+    "image": "idli.jpg",
+    "confidence": 0.97,
+    "ingredients": [
+      {"name": "Rice", "percentage": 60, "waterPerKg": 2500},
+      {"name": "Urad Dal", "percentage": 40, "waterPerKg": 4000}
+    ],
+    "totalWaterL": 100,
+    "equivalent": {"glasses": 500, "showers": 2, "drinkingDays": 4},
+    "sustainabilityScore": 85,
+    "quipTier": "low",
+    "alternatives": ["dhokla"]
   }
 ]
