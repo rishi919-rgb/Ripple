@@ -167,7 +167,7 @@ export default function ResultPage() {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="w-full h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                 <PieChart>
                   <Pie
                     data={ingredientData}

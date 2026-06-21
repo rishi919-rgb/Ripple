@@ -26,7 +26,11 @@ export const FoodProvider = ({ children }) => {
   const addToWaterBank = (amount) => {
     setWaterBank((prev) => {
       const newVal = prev + amount;
-      localStorage.setItem("ripple_water_bank", newVal.toString());
+      try {
+        localStorage.setItem("ripple_water_bank", newVal.toString());
+      } catch (e) {
+        console.warn('localStorage write failed', e);
+      }
       return newVal;
     });
   };
@@ -34,7 +38,11 @@ export const FoodProvider = ({ children }) => {
   const incrementStreak = () => {
     setStreak((prev) => {
       const newVal = prev + 1;
-      localStorage.setItem("ripple_streak", newVal.toString());
+      try {
+        localStorage.setItem("ripple_streak", newVal.toString());
+      } catch (e) {
+        console.warn('localStorage write failed', e);
+      }
       return newVal;
     });
   };

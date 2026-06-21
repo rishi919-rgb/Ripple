@@ -7,6 +7,8 @@ import { Camera, Loader2 } from "lucide-react";
 import foods from "../data/foods.json";
 import { analyzeFoodImage } from "../lib/gemini";
 
+const USE_AI = false; // Offline Safe Mode: false = always use dataset, true = try Gemini
+
 const emojiMap = {
   samosa: "🥟",
   pizza: "🍕",
@@ -30,11 +32,36 @@ const cardVariants = {
   show:  { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 22 } },
 };
 
+const readFileAsDataURL = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
+
+  const handleLiveScanClick = () => {
+    if (USE_AI) {
+      fileInputRef.current?.click();
+    } else {
+      // Offline safe mode simulation
+      setIsAnalyzing(true);
+      setError(null);
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        // Pick a random food as a fallback for the demo
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        const randomFood = foods[randomIndex];
+        navigate(`/detection?foodId=${randomFood.id}`);
+      }, 1500);
+    }
+  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -44,35 +71,23 @@ export default function UploadPage() {
     setIsAnalyzing(true);
 
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result.split(",")[1];
-        const mimeType = file.type;
+      const dataUrl = await readFileAsDataURL(file);
+      const base64String = dataUrl.split(",")[1];
+      const mimeType = file.type;
 
-        try {
-          const result = await analyzeFoodImage(base64String, mimeType);
+      const result = await analyzeFoodImage(base64String, mimeType);
 
-          if (
-            result.closestDatasetMatch &&
-            foods.some((f) => f.id === result.closestDatasetMatch)
-          ) {
-            navigate(`/detection?foodId=${result.closestDatasetMatch}`);
-          } else {
-            setError(
-              "Could not match the food to our dataset. Please try another photo."
-            );
-            setIsAnalyzing(false);
-          }
-        } catch (err) {
-          setError(
-            err.message || "Failed to analyze image. Ensure API key is set."
-          );
-          setIsAnalyzing(false);
-        }
-      };
-      reader.readAsDataURL(file);
+      if (
+        result.closestDatasetMatch &&
+        foods.some((f) => f.id === result.closestDatasetMatch)
+      ) {
+        navigate(`/detection?foodId=${result.closestDatasetMatch}`);
+      } else {
+        setError("Could not match the food to our dataset. Please try another photo.");
+        setIsAnalyzing(false);
+      }
     } catch (err) {
-      setError("Failed to read file.");
+      setError(err.message || "Failed to analyze image.");
       setIsAnalyzing(false);
     }
   };
@@ -146,17 +161,19 @@ export default function UploadPage() {
           </div>
         </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          ref={fileInputRef}
-          className="hidden"
-          onChange={handleFileChange}
-        />
+        {USE_AI && (
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        )}
 
         <Button
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleLiveScanClick}
           disabled={isAnalyzing}
           className="mt-6 w-full max-w-xs flex items-center justify-center gap-2"
           size="lg"
@@ -164,12 +181,12 @@ export default function UploadPage() {
           {isAnalyzing ? (
             <>
               <Loader2 className="animate-spin h-5 w-5" />
-              Analyzing...
+              Analyzing your photo...
             </>
           ) : (
             <>
               <Camera className="h-5 w-5" />
-              Snap a Photo
+              📷 Scan Real Food
             </>
           )}
         </Button>

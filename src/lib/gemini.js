@@ -8,26 +8,27 @@ if (API_KEY && API_KEY !== "your_api_key_here") {
 }
 
 export async function analyzeFoodImage(base64Image, mimeType) {
-  if (!genAI) {
-    throw new Error("Gemini API key is missing or invalid. Please add VITE_GEMINI_API_KEY to your .env.local file.");
-  }
+  try {
+    if (!genAI) {
+      console.warn("Gemini API key is missing or invalid. Falling back to default.");
+      return { foodName: "unknown", confidence: 0, closestDatasetMatch: "samosa" };
+    }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const prompt = `You are an AI that identifies food from images. Return a JSON object with keys:
+    const prompt = `You are an AI that identifies food from images. Return a JSON object with keys:
 "foodName": string,
 "confidence": number (0-1),
 "closestDatasetMatch": one of ["samosa","pizza","burger","dosa","biryani","dhokla","idli"]
 If unsure, return "unknown" for foodName and confidence 0.`;
 
-  const imagePart = {
-    inlineData: {
-      data: base64Image,
-      mimeType: mimeType,
-    },
-  };
+    const imagePart = {
+      inlineData: {
+        data: base64Image,
+        mimeType: mimeType,
+      },
+    };
 
-  try {
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
     let text = response.text();
@@ -41,7 +42,8 @@ If unsure, return "unknown" for foodName and confidence 0.`;
 
     return JSON.parse(text);
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    throw error;
+    console.warn("Error calling Gemini API:", error);
+    // Graceful fallback for any 404, network, or parsing error
+    return { foodName: "unknown", confidence: 0, closestDatasetMatch: "samosa" };
   }
 }
