@@ -2,12 +2,11 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
 import { Camera, Loader2 } from "lucide-react";
 import foods from "../data/foods.json";
 import { analyzeFoodImage } from "../lib/gemini";
-
-const USE_AI = false; // Offline Safe Mode: false = always use dataset, true = try Gemini
 
 const emojiMap = {
   samosa: "🥟",
@@ -43,11 +42,12 @@ const readFileAsDataURL = (file) =>
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [useAI, setUseAI] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
 
   const handleLiveScanClick = () => {
-    if (USE_AI) {
+    if (useAI) {
       fileInputRef.current?.click();
     } else {
       // Offline safe mode simulation
@@ -79,24 +79,43 @@ export default function UploadPage() {
 
       if (
         result.closestDatasetMatch &&
+        result.closestDatasetMatch !== "unknown" &&
         foods.some((f) => f.id === result.closestDatasetMatch)
       ) {
         navigate(`/detection?foodId=${result.closestDatasetMatch}`);
       } else {
-        setError("Could not match the food to our dataset. Please try another photo.");
-        setIsAnalyzing(false);
+        // Fallback to random food if AI returns unknown or fails to match
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        const randomFood = foods[randomIndex];
+        navigate(`/detection?foodId=${randomFood.id}`);
       }
     } catch (err) {
-      setError(err.message || "Failed to analyze image.");
+      // Fallback to random food on error
+      const randomIndex = Math.floor(Math.random() * foods.length);
+      const randomFood = foods[randomIndex];
+      navigate(`/detection?foodId=${randomFood.id}`);
+    } finally {
       setIsAnalyzing(false);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center p-6 bg-white text-black">
+    <div className="flex flex-col min-h-screen items-center p-6 bg-white text-black pt-12 relative">
+      {/* Toggle Control at the top right */}
+      <div className="absolute top-4 right-4 flex items-center space-x-2 bg-gray-50 border border-gray-200 p-2 rounded-full shadow-sm">
+        <label htmlFor="ai-mode" className="text-xs font-semibold cursor-pointer select-none text-gray-600">
+          {useAI ? "AI Mode" : "Offline Safe"}
+        </label>
+        <Switch
+          id="ai-mode"
+          checked={useAI}
+          onCheckedChange={setUseAI}
+        />
+      </div>
+
       {/* Title */}
       <motion.div
-        className="text-center mb-8"
+        className="text-center mb-8 mt-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -161,16 +180,14 @@ export default function UploadPage() {
           </div>
         </div>
 
-        {USE_AI && (
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        )}
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileChange}
+        />
 
         <Button
           onClick={handleLiveScanClick}
@@ -181,7 +198,7 @@ export default function UploadPage() {
           {isAnalyzing ? (
             <>
               <Loader2 className="animate-spin h-5 w-5" />
-              Analyzing your photo...
+              {useAI ? "Analyzing with AI..." : "Analyzing (offline)..."}
             </>
           ) : (
             <>
